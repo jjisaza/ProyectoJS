@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Supervivencia - Isla Post-Nuclear</title>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Creepster&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2R3NTQ1YXV4anpvaXczdXEzbThlb3VlZWIyZWFhaXgxNXZ3Zm9xaiZlcD12MV9naWZzX3JlbGF0ZWQmY3Q9Zw/bZrS7lR3CHxUlFCOfV/giphy.gif');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Special Elite', cursive;
+            color: #c8a96e;
+        }
+
+        p {
+            font-size: 40;
+        }
+
+        /* Contenedor Principal Compacto */
+        #guia-contenedor {
+            width: 850px;
+            background: rgba(10, 5, 0, 0.92);
+            border: 3px solid #5a3a1a;
+            box-shadow: 0 0 30px rgba(0,0,0,0.9);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-family: 'Creepster', cursive;
+            font-size: 42px;
+            color: #cc2200;
+            text-align: center;
+            margin: 0 0 10px 0;
+            text-shadow: 2px 2px 0px #1a0a00, 0 0 15px rgba(180, 20, 0, 0.6);
+        }
+
+        .seccion-titulo {
+            border-bottom: 1px solid #5a3a1a;
+            color: #cc2200;
+            font-size: 28px;
+            margin: 20px 0 15px 0;
+            padding-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Estilo de Fila: Imagen a la Izquierda, Texto Centrado */
+        .fila-entidad {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            background: rgba(42, 26, 10, 0.4);
+            border: 1px solid #5a3a1a;
+            padding: 10px;
+            transition: background 0.3s;
+        }
+
+        .fila-entidad:hover {
+            background: rgba(211, 129, 46, 0.7);
+        }
+
+        .caja-img {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+            border: 2px solid #5a3a1a;
+            background: #1a0a00;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .caja-img img {
+            max-width: 90%;
+            max-height: 90%;
+            image-rendering: pixelated;
+        }
+
+        .caja-info {
+            flex-grow: 1;
+        }
+
+        .caja-info h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #cc2200;
+        }
+
+        .caja-info p {
+            margin: 5px 0 0 0;
+            font-size: 13px;
+            line-height: 1.6; /* Aumentado un poco para mejor lectura con saltos */
+            color: #b89a5a;
+        }
+
+        /* Instrucciones de Control */
+        .controles {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 30px;
+            background: #1a0a00;
+            padding: 10px;
+            border: 1px solid #cc2200;
+        }
+
+        .btn-jugar {
+            display: block;
+            box-sizing: border-box; 
+            width: 100%;
+            margin-top: 25px;
+            padding: 15px;
+            background: #cc2200;
+            color: #000;
+            border: 2px solid #cc2200;
+            font-family: 'Special Elite', cursive;
+            font-size: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn-jugar:hover {
+            background: #726d39;
+            color: #1a0a00;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="guia-contenedor">
+        <h1>GUÍA DE SUPERVIVENCIA</h1>
+
+        <!-- SECCIÓN: OBJETIVO DEL JUEGO (Briefing de Misión) -->
+    <div class="seccion-titulo">Objetivo de Escape</div>
+    <div style="background: rgba(204, 34, 0, 0.15); border: 1px solid #cc2200; padding: 20px; margin-bottom: 25px; border-radius: 4px;">
+        <p style="font-size: 16px; line-height: 1.6; color: #b89a5a margin-bottom: 15px;">
+            Has despertado en la <strong>Zona Cero</strong>. El mundo que conocías ha desaparecido bajo las aguas y la radiación. Tu única esperanza de ver el amanecer es llegar al búnker blindado, pero la puerta está sellada y el hambre te pisa los talones.
+        </p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; text-align: center;">
+            <div style="background: #1a0a00; padding: 10px; border: 1px solid #5a3a1a;">
+                <h4 style="color: #cc2200; margin: 0 0 5px 0;">1. BUSCAR</h4>
+                <p style="font-size: 12px; margin: 0;">Encuentra la <strong>Llave Maestra</strong> oculta en el mapa.</p>
+            </div>
+            <div style="background: #1a0a00; padding: 10px; border: 1px solid #5a3a1a;">
+                <h4 style="color: #cc2200; margin: 0 0 5px 0;">2. EQUIPAR</h4>
+                <p style="font-size: 12px; margin: 0;">Consigue el <strong>Machete</strong> para eliminar zombies.</p>
+            </div>
+            <div style="background: #1a0a00; padding: 10px; border: 1px solid #5a3a1a;">
+                <h4 style="color: #cc2200; margin: 0 0 5px 0;">3. ENTRAR</h4>
+                <p style="font-size: 12px; margin: 0;">Cruza el umbral del <strong>Búnker</strong> y sobrevive.</p>
+            </div>
+        </div>
+    </div>
+        
+        <p style="text-align: center; font-size: 14px; margin-bottom: 20px;">
+            "Navegas por un mundo destruido lleno de Zombies. <br> <strong>mundo ha terminado, pero tu viaje no."</strong> 
+        </p>
+
+        <div class="seccion-titulo">CONTROLES DE NAVEGACIÓN</div>
+        <div class="controles">
+            <div>⬆ ARRIBA</div>
+            <div>⬇ ABAJO</div>
+            <div>⬅ IZQUIERDA</div>
+            <div>➡ DERECHA</div>
+        </div>
+
+        <div class="fila-entidad">
+            <div class="caja-img"><img src="images/twd.png" alt="Superviviente"></div>
+            <div class="caja-info">
+                <h3>DARYL (EL SUPERVIVIENTE)</h3>
+                <p>Eres el último rastro de humanidad en esta zona.<br>Tu cuerpo está al límite: <strong>cada paso que das consume 1 ración de comida</strong>.<br>Si tu contador de raciones llega a cero, el hambre te vencerá.<br>Mantén tus 3 corazones a salvo, porque en este mundo no hay segundas oportunidades si tu salud se agota.</p>
+            </div>
+        </div>
+
+        <div class="fila-entidad">
+            <div class="caja-img"><img src="images/pirate.png" alt="Saqueadores"></div>
+            <div class="caja-info">
+                <h3>CLANES DE SAQUEADORES</h3>
+                <p>Bandidos oportunistas que patrullan las ruinas.<br>Al encontrarte con ellos, se iniciará un combate automático donde se pondrá a prueba tu fuerza (basada en tu comida y suministros).<br>Si ganas, les arrebatarás sus recursos; <br>si pierdes, serás tú quien termine herido y con la mochila saqueada.</p>
+            </div>
+        </div>
+
+        <div class="fila-entidad">
+            <div class="caja-img"><img src="images/z.png" alt="Zombie"></div>
+            <div class="caja-info">
+                <h3>LOS MUERTOS (CAMINANTES)</h3>
+                <p>Cadáveres reanimados que vagan sin descanso.<br>Si uno de ellos te alcanza y vas desarmado, te morderá provocándote la pérdida de una vida y te obligará a retroceder al punto de inicio.<br>Sin embargo, si llevas el <strong>Machete</strong>, podrás ejecutarlos para ganar experiencia y limpiar el camino.</p>
+            </div>
+        </div>
+
+        <div class="fila-entidad">
+            <div class="caja-img"><img src="images/tienda.png" alt="Mercado Negro"></div>
+            <div class="caja-info">
+                <h3>MERCADO NEGRO DE RUINAS</h3>
+                <p>Un puesto de avanzada donde los suministros son la única ley.<br>Aquí puedes intercambiar el botín que encuentres por equipo vital.<br>Podrás adquirir el <strong>Machete "Rebana-Zombies 3000"</strong> por 5 suministros o comprar paquetes de <strong>Raciones Militares (MRE)</strong> por 3 suministros para no morir de inanición.</p>
+            </div>
+        </div>
+
+        <div class="fila-entidad">
+            <div class="caja-img"><img src="images/aniquilador.png" alt="Machete"></div>
+            <div class="caja-info">
+                <h3>REBANA-ZOMBIES 3000 (LA ESPADA)</h3>
+                <p>La joya de la corona del Mercado Negro. Este machete reforzado cambia las reglas del juego: <strong>es la única forma de eliminar a los zombies</strong>. Sin ella, tocar un muerto viviente te costará una vida; con ella, los despacharás de un golpe, limpiarás el mapa y ganarás puntos de experiencia. Es una inversión de 5 suministros que separa a las víctimas de los supervivientes.</p>
+            </div>
+        </div>
+
+        <div class="fila-entidad">
+            <div class="caja-img"><img src="images/suministros.png" alt="Mochila"></div>
+            <div class="caja-info">
+                <h3>SUMINISTROS ABANDONADOS</h3>
+                <p>Mochilas militares y cajas de equipo dejadas atrás durante el colapso.<br>Recoger estos paquetes te otorga <strong>+5 suministros</strong> de forma inmediata.<br>Son esenciales para poder comerciar en el Mercado Negro, así que desvíate de tu ruta si ves una; la codicia a veces es necesaria para sobrevivir.</p>
+            </div>
+        </div>
+
+        <div class="fila-entidad">
+            <div class="caja-img"><img src="images/key.png" alt="Llave"></div>
+            <div class="caja-info">
+                <h3>LA LLAVE MAESTRA</h3>
+                <p>Un objeto único perdido en algún rincón del mapa.<br>Sin esta llave, la pesada puerta blindada del refugio no se abrirá.<br>Es tu prioridad absoluta: búscala entre las aguas contaminadas y, una vez que la tengas en tu inventario, no te detengas ante nada hasta llegar a la salvación.</p>
+            </div>
+        </div>
+
+        <div class="fila-entidad">
+            <div class="caja-img"><img src="images/campaña.png" alt="Búnker"></div>
+            <div class="caja-info">
+                <h3>EL BÚNKER (TU DESTINO)</h3>
+                <p>El último lugar seguro sobre la faz de la tierra.<br>Representa tu victoria y el fin de la pesadilla.<br>Para entrar y sellar la escotilla, <strong>es obligatorio poseer la Llave Maestra</strong>.<br>Si llegas sin ella, solo encontrarás una puerta cerrada y a los muertos pisándote los talones.</p>
+            </div>
+        </div>
+
+        <div class="fila-entidad">
+            <div class="caja-img"><img src="images/mina.png" alt="Trampa"></div>
+            <div class="caja-info">
+                <h3>TRAMPAS ANTIPERSONA</h3>
+                <p>Viejas minas terrestres ocultas bajo los escombros.<br>Son invisibles hasta que es demasiado tarde.<br>Pisar una de ellas causará una explosión que te restará <strong>un corazón de vida</strong> instantáneamente.<br>Tras detonar, la zona quedará despejada, pero el daño en tu cuerpo será permanente.</p>
+            </div>
+        </div>
+        
+        <a href="aventura_apocalipsis.html" class="btn-jugar">ENTRAR AL JUEGO</a>
+    </div>
+</body>
+</html>

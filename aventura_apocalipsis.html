@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<head>
+    <!-- Ruta corregida apuntando a la carpeta images -->
+    <link rel="icon" href="images/icon.ico" type="image/x-icon">
+    
+    <!-- O si prefieres usar el PNG (también corregido) -->
+</head>
+<title>Zona Cero: La Última Travesía</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap');
+
+body {
+    background-image: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2R3NTQ1YXV4anpvaXczdXEzbThlb3VlZWIyZWFhaXgxNXZ3Zm9xaiZlcD12MV9naWZzX3JlbGF0ZWQmY3Q9Zw/bZrS7lR3CHxUlFCOfV/giphy.gif');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0; /* Eliminamos el padding para controlarlo con el flex */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* ESTO CENTRA EL JUEGO VERTICALMENTE Y LO SEPARA DEL BORDE */
+    height: 100vh; /* Usamos height fijo en lugar de min-height para evitar el scroll */
+    overflow: hidden; /* ESTO QUITA LOS SCROLLBARS */
+    font-family: 'Special Elite', cursive;
+}
+
+#contenedor-juego {
+    position: relative;
+    width: 512px;
+    border: 3px solid #5a3a1a;
+    box-shadow:
+        0 0 0 2px #1a0a00,
+        0 0 30px rgba(0,0,0,0.9),
+        inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+#corazon-posix {
+    position: absolute;
+    
+    /* --- 1. POSICIÓN HORIZONTAL --- */
+    right: 1230px;         /* <--- ESTA ES LA CLAVE: cámbialo por 'left' si los quieres a la izquierda */
+    left: auto;          /* Esto anula cualquier 'left' que tengas guardado en el navegador */
+
+    /* --- 2. CENTRALIZACIÓN VERTICAL --- */
+    top: 50%;            
+    transform: translateY(-50%); /* Esto hace que el centro del grupo de corazones sea el centro de la pantalla */
+    
+    /* --- 3. ALINEACIÓN DEL GRUPO --- */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra los corazones uno encima de otro dentro de su caja */
+    gap: 35px;           /* Espacio entre ellos para que no se vean amontonados */
+ filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.5));
+}
+
+.icon-corazon {
+    width: 80px; 
+    height: 80px;
+    image-rendering: pixelated; /* Para que el pixel-art no se vea borroso */
+}
+
+#stage {
+    position: relative;
+    width: 512px;
+    height: 512px;
+    background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("images/background.png");
+    overflow: hidden;
+}
+
+.cell {
+    display: block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+}
+
+#output {
+    width: 512px;
+    margin: 0;
+    background: rgba(10, 5, 0, 0.88);
+    color: #c8a96e;
+    font-size: 14px;
+    padding: 10px 14px;
+    box-sizing: border-box;
+    border: 2px solid #5a3a1a;
+    border-top: none;
+    line-height: 1.6;
+}
+
+.pantalla {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 512px;
+    height: 512px;
+    background: rgba(5, 2, 0, 0.92);
+    color: #c8a96e;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 10;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.pantalla h1 {
+    font-family: 'Creepster', cursive;
+    font-size: 40px;
+    letter-spacing: 6px;
+    color: #cc2200;
+    text-shadow:
+        2px 2px 0px #1a0a00,
+        0 0 20px rgba(180, 20, 0, 0.6);
+    margin: 0;
+    line-height: 1.1;
+}
+
+.pantalla p {
+    background: transparent;
+    border: none;
+    color: #b89a5a;
+    font-size: 15px;
+    width: auto;
+    max-width: 400px;
+    padding: 0;
+    line-height: 1.7;
+}
+
+button {
+    padding: 12px 32px;
+    font-size: 18px;
+    font-family: 'Special Elite', cursive;
+    letter-spacing: 3px;
+    cursor: pointer;
+    background: transparent;
+    color: #cc2200;
+    border: 2px solid #cc2200;
+    text-transform: uppercase;
+    transition: background 0.2s, color 0.2s;
+    text-shadow: 0 0 8px rgba(180, 20, 0, 0.5);
+}
+
+button:hover {
+    background: #cc2200;
+    color: #0a0500;
+}
+
+#pantalla-final {
+    display: none;
+}
+
+#pantalla-tienda {
+    display: none; 
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 512px;
+    height: 512px;
+    background-color: #1a0a00;
+    z-index: 100;
+    text-align: center;
+    padding-top: 10px;
+    box-sizing: border-box;
+    border: 2px solid #ffd700;
+}
+
+.tienda-titulo {
+    font-family: 'Creepster', cursive;
+    font-size: 28px;
+    color: #ffd700;
+    margin-bottom: 10px;
+}
+
+.tienda-item {
+    background: #2a1a0a; 
+    border: 1px solid #5a3a1a;
+    margin: 5px auto;
+    padding: 8px;
+    width: 320px;
+    border-radius: 8px;
+}
+
+.tienda-item h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #cc2200;
+}
+
+.tienda-item p {
+    margin: 3px 0;
+    font-size: 12px;
+    color: #c8a96e;
+}
+
+.tienda-precio {
+    color: #4aff4a;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.btn-comprar {
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+#pantalla-tienda > button:last-child {
+    margin-top: 10px;
+    padding: 5px 20px;
+    font-size: 14px;
+}
+
+/* ESTILO DEL INVENTARIO */
+#inventario {
+    /* --- Posicionamiento --- */
+    position: fixed;        /* Lo fija en la pantalla para que no se mueva al hacer scroll */
+    right: 150px;            /* Distancia desde el borde derecho */
+    top: 50%;               /* Lo baja hasta la mitad de la altura de la pantalla */
+    transform: translateY(-50%); /* Lo sube exactamente la mitad de su propio tamaño para centrarlo */
+    
+    /* --- Estructura --- */
+    width: auto;            /* Cambiamos a auto para que se ajuste a los slots verticales */
+    display: flex;
+    flex-direction: column; /* Alinea los slots uno encima de otro como los corazones */
+    gap: 10px;
+    padding: 15px;
+    
+    /* --- Estética (Tu diseño original) --- */
+    background: rgba(20, 10, 0, 0.8);
+    border: 2px solid #5a3a1a;
+    justify-content: center;
+    z-index: 100;           /* Asegura que esté por encima de otros elementos */
+}
+
+.inv-slot {
+    width: 150px;
+    height: 150px;
+    border: 2px solid #3a2a1a;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    text-align: center;
+    color: #555;
+}
+
+.inv-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.p-inv{
+    color: red;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-family: 'Creepster', cursive;
+    font-size: 22px;
+}
+
+/* Contenedor para fijar el botón en la esquina superior izquierda */
+.btn-esquina {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000; /* Asegura que esté por encima de todo */
+    text-decoration: none; /* Quita el subrayado del enlace */
+}
+
+/* Ajuste específico para que el botón se vea pequeño y estilizado en la esquina */
+.btn-esquina button {
+    padding: 8px 20px;
+    font-size: 14px;
+    /* Reutiliza tus estilos existentes de 'button' automáticamente */
+}
+
+
+</style>
+
+<div id="corazon-posix"></div>
+
+<div id="contenedor-juego">
+    <div id="pantalla-inicio" class="pantalla">
+        <h1>ZONA CERO:<br>LA ÚLTIMA TRAVESÍA</h1>
+        <p>El mundo colapsó hace tres años. Eres el único superviviente de tu campamento. 
+        Cruza las aguas infectadas, evita a los no-muertos y llega al búnker antes de que 
+        se te acaben las raciones. <strong>Muévete con las flechas del teclado.</strong></p>
+        <button onclick="iniciarJuego()">SOBREVIVIR</button>
+    </div>
+
+    <div id="stage"></div>
+
+    <div id="pantalla-final" class="pantalla">
+        <h1 id="titulo-final">FIN DE LA LÍNEA</h1>
+        <p id="mensaje-final"></p>
+        <button onclick="location.reload()">INTENTARLO DE NUEVO</button>
+    </div>
+
+    <div id="pantalla-tienda" class="pantalla">
+        <div class="tienda-titulo">⚠ MERCADO NEGRO ⚠</div>
+
+        <div class="tienda-item">
+            <h3>Rebana - Zombies 3000</h3>
+            <p>Hoja dentada reforzada con cable de acero. Un golpe limpio despacha a cualquier zombie. 
+            Artesanía post-apocalíptica de primera.</p>
+            <p class="tienda-precio">Precio: 5 suministros</p>
+            <button class="btn-comprar" onclick="comprarEspada()">CONSEGUIR</button>
+        </div>
+
+        <div class="tienda-item">
+            <h3>Raciones Militares MRE</h3>
+            <p>Lote de comida liofilizada recuperada de un convoy del ejército. 
+            Saben a cartón, pero te mantienen vivo.</p>
+            <p class="tienda-precio">Precio: 3 suministros</p>
+            <button class="btn-comprar" onclick="comprarComida()">CONSEGUIR</button>
+        </div>
+
+        <button onclick="cerrarTienda()">SALIR DEL MERCADO</button>
+    </div>
+</div>
+
+<a href="1.html" class="btn-esquina">
+    <button>Instrucciones</button>
+</a>
+
+<!-- Se ubica en la columna derecha (side-panel-right) -->
+<div id="inventario">
+    <p class="p-inv">⚠ INVENTARIO ⚠</p>
+    <div id="slot-llave" class="inv-slot">Busca la <br>llave del<br> búnker en <br>el MAPA</div>
+    <div id="slot-machete" class="inv-slot">Compra el machete en<br> el Mercado <br> Negro</div>
+</div>
+
+<p id="output"></p>
+
+<script>
+
+var pantallaInicio = document.querySelector("#pantalla-inicio");
+var pantallaFinal = document.querySelector("#pantalla-final");
+var pantallaTienda = document.querySelector("#pantalla-tienda");
+var mensajeFinal = document.querySelector("#mensaje-final");
+var tituloFinal = document.querySelector("#titulo-final");
+
+var contvidas = document.querySelector("#corazon-posix");
+var stage = document.querySelector("#stage");
+var output = document.querySelector("#output");
+
+window.addEventListener("keydown", keydownHandler, false);
+
+function iniciarJuego() {
+    pantallaInicio.style.display = "none";
+    window.addEventListener("keydown", keydownHandler, false);
+
+    posicionarLlaveAleatoria();
+    setInterval(moverMonstruo(), 1000);
+    render();
+}
+
+var map = [
+    [0, 2, 0, 0, 0, 3, 0, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 2, 0, 1, 0, 6, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+    [0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0],
+    [0, 0, 0, 0, 8, 6, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 9]
+];
+
+var gameObjects = [
+    [0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0]
+];
+
+var WATER = 0;
+var ISLAND = 1;
+var PIRATE = 2;
+var BUNKER = 3;
+var DARYL = 4;
+var MONSTER = 5;
+var MINA = 6;
+var TIENDA = 7;
+var SUMINISTRO = 8;
+var KEY = 9;
+
+var UP = 38;
+var DOWN = 40;
+var RIGHT = 39;
+var LEFT = 37;
+
+var SIZE = 64;
+var ROWS = map.length;
+var COLUMNS = map[0].length;
+var causaMuerte = "";
+
+var darylRow;
+var darylColumn;
+
+var vidas = 3;
+var comida = 200;
+var suministros = 10;
+var experiencia = 0;
+var gameMessage = "Los muertos caminan. Tú también debes hacerlo, Encuentra el búnker antes de que sea demasiado tarde.";
+var gameEnded = false;
+
+var tieneEspada = false;
+var tieneLlave = false;
+
+function abrirTienda() {
+    pantallaTienda.style.display = "flex";
+    window.removeEventListener("keydown", keydownHandler, false);
+}
+
+function cerrarTienda() {
+    pantallaTienda.style.display = "none";
+    window.addEventListener("keydown", keydownHandler, false);
+    render();
+}
+
+function comprarEspada() {
+    var precioEspada = 5;
+    if (suministros >= precioEspada && !tieneEspada) {
+        suministros -= precioEspada;
+        tieneEspada = true;
+        event.target.textContent = "EN TU MOCHILA";
+        event.target.disabled = true;
+    } else if (tieneEspada) {
+        gameMessage = "Ya llevas el machete al cinto. No necesitas otro.";
+    } else {
+        gameMessage = "No tienes suficientes suministros. Busca más antes de volver.";
+    }
+}
+
+function comprarComida() {
+    var precioComida = 3;
+    var gananciaComida = 20;
+    if (suministros >= precioComida) {
+        suministros -= precioComida;
+        comida += gananciaComida;
+        gameMessage = "Metes las raciones en la mochila. +20 de comida, cada bocado cuenta.";
+    } else {
+        gameMessage = "Bolsillos vacíos. Sin suministros no hay trato en este mundo.";
+    }
+    render();
+}
+
+function posicionarLlaveAleatoria() {
+    for (var r = 0; r < ROWS; r++) {
+        for (var c = 0; c < COLUMNS; c++) {
+            if (map[r][c] === KEY) map[r][c] = WATER;
+        }
+    }
+    var posValida = false;
+    while (!posValida) {
+        filaAzar = Math.floor(Math.random() * ROWS);
+        columnaAzar = Math.floor(Math.random() * COLUMNS);
+        if (map[filaAzar][columnaAzar] === WATER && gameObjects[filaAzar][columnaAzar] === 0) {
+            map[filaAzar][columnaAzar] = KEY;
+            posValida = true;
+        }
+    }
+}
+
+for (var row = 0; row < ROWS; row++) {
+    for (var column = 0; column < COLUMNS; column++) {
+        if (gameObjects[row][column] === DARYL) {
+            darylRow = row;
+            darylColumn = column;
+        }
+        if (gameObjects[row][column] === MONSTER) {
+            monsterRow = row;
+            monsterColumn = column;
+        }
+    }
+}
+
+render();
+
+function keydownHandler(event) {
+    if (gameEnded) return;
+
+    var nuevaFila = darylRow;
+    var nuevaColumna = darylColumn;
+
+    switch (event.keyCode) {
+        case UP:    if (darylRow > 0)           nuevaFila--;    break;
+        case DOWN:  if (darylRow < ROWS - 1)    nuevaFila++;    break;
+        case LEFT:  if (darylColumn > 0)        nuevaColumna--; break;
+        case RIGHT: if (darylColumn < COLUMNS-1) nuevaColumna++; break;
+    }
+
+    // Guarda qué había en la casilla destino ANTES de moverte
+    var objetoEnDestino = gameObjects[nuevaFila][nuevaColumna];
+
+    // Mueve a Daryl
+    gameObjects[darylRow][darylColumn] = 0;
+    darylRow = nuevaFila;
+    darylColumn = nuevaColumna;
+    gameObjects[darylRow][darylColumn] = DARYL;
+    comida--;
+
+    // Eventos del mapa (BUNKER, MINA, TIENDA...)
+    switch (map[darylRow][darylColumn]) {
+        case WATER:
+            gameMessage = "Aguas contaminadas. Silencio absoluto.";
+            break;
+        case PIRATE:
+            combate();
+            break;
+        case ISLAND:
+            comerciar();
+            break;
+        case BUNKER:
+            if (tieneLlave) { endGame(); }
+            else { gameMessage = "¡Búnker! La escotilla está sellada. Necesitas la llave maestra."; }
+            break;
+        case MINA:
+            case MINA:
+                vidas--;
+                map[darylRow][darylColumn] = WATER; // Desactiva la mina
+
+            if (vidas <= 0) {
+                causaMuerte = "MINA";
+                gameMessage = "💥 ¡TRAMPA ANTIPERSONA! El suelo te despedaza. No hay vuelta atrás.";
+                endGame();
+            } else {
+                // Se queda en el sitio, solo pierde la vida
+                gameMessage = "💥 ¡MINA! La explosión te sacude. Sigues en pie, pero malherido. (" + vidas + " vidas restantes)";
+            }
+            break;
+        case TIENDA:
+            abrirTienda();
+            break;
+        case SUMINISTRO:
+            suministros += 5;
+            gameMessage = "¡Mochila militar! +5 suministros.";
+            map[darylRow][darylColumn] = WATER;
+            break;
+        case KEY:
+            tieneLlave = true;
+            gameMessage = "¡La llave del búnker! Ahora ve al refugio.";
+            map[darylRow][darylColumn] = WATER;
+            break;
+    }
+
+    // ✅ Colisión con zombie usando objetoEnDestino
+    if (objetoEnDestino === MONSTER) {
+        if (tieneEspada) {
+            gameMessage = "🗡️ Machete al cráneo. Se desploma. ¡Uno menos!";
+            experiencia += 5;
+            // Recoloca el monstruo en su posición de origen
+            gameObjects[darylRow][darylColumn] = DARYL; // Daryl sobrevive en esa casilla
+        } else {
+            vidas--;
+            gameMessage = "🧟 ¡ZOMBIE! Te muerde el brazo. Consigues escapar... por ahora.";
+            if (vidas <= 0) {
+                causaMuerte = "ZOMBIE";
+                endGame();
+            } else {
+                // ✅ Teletransporte correcto
+                gameObjects[darylRow][darylColumn] = 0; // Limpia casilla actual
+                darylRow = 7;
+                darylColumn = 0;
+                gameObjects[darylRow][darylColumn] = DARYL; // Pone a Daryl en spawn
+            }
+        }
+    }
+
+    moverMonstruo();
+
+    if (comida <= 0) endGame();
+
+    render();
+}
+
+function moverMonstruo() {
+    if (gameEnded) return;
+
+    var listaDeMonstruos = [];
+    for (var fila = 0; fila < ROWS; fila++) {
+        for (var columna = 0; columna < COLUMNS; columna++) {
+            if (gameObjects[fila][columna] === MONSTER) {
+                listaDeMonstruos.push({ f: fila, c: columna });
+            }
+        }
+    }
+
+    listaDeMonstruos.forEach(posicion => {
+        var f = posicion.f;
+        var c = posicion.c;
+        var pasosPosibles = [];
+
+        if (f > 0 && map[f - 1][c] === WATER && gameObjects[f - 1][c] === 0) pasosPosibles.push("ARRIBA");
+        if (f < ROWS - 1 && map[f + 1][c] === WATER && gameObjects[f + 1][c] === 0) pasosPosibles.push("ABAJO");
+        if (c > 0 && map[f][c - 1] === WATER && gameObjects[f][c - 1] === 0) pasosPosibles.push("IZQUIERDA");
+        if (c < COLUMNS - 1 && map[f][c + 1] === WATER && gameObjects[f][c + 1] === 0) pasosPosibles.push("DERECHA");
+
+        if (pasosPosibles.length > 0) {
+            var eleccion = pasosPosibles[Math.floor(Math.random() * pasosPosibles.length)];
+            gameObjects[f][c] = 0;
+            if (eleccion === "ARRIBA")    gameObjects[f - 1][c] = MONSTER;
+            if (eleccion === "ABAJO")     gameObjects[f + 1][c] = MONSTER;
+            if (eleccion === "IZQUIERDA") gameObjects[f][c - 1] = MONSTER;
+            if (eleccion === "DERECHA")   gameObjects[f][c + 1] = MONSTER;
+        }
+    });
+}
+
+function combate() {
+    var fuerzaBarco = Math.ceil((comida + suministros) / 2);
+    var fuerzaPirata = Math.ceil(Math.random() * fuerzaBarco * 2);
+
+    if (fuerzaPirata > fuerzaBarco) {
+        var suministrosRobados = Math.round(fuerzaPirata / 2);
+        suministros -= suministrosRobados;
+        experiencia += 1;
+        gameMessage = "⚔️ ¡EMBOSCADA DE SAQUEADORES! Te superan en número. Te arrancan " + suministrosRobados + " suministros de las manos."
+            + " Tu fuerza: " + fuerzaBarco + " | Su brutalidad: " + fuerzaPirata + ". Sobrevives, pero sangras por dentro.";
+    } else {
+        var suministrosPirata = Math.round(fuerzaPirata / 2);
+        suministros += suministrosPirata;
+        experiencia += 2;
+        gameMessage = "⚔️ ¡SAQUEADORES NEUTRALIZADOS! Los dejas en el suelo y saqueas sus reservas: +" + suministrosPirata + " suministros."
+            + " Tu fuerza: " + fuerzaBarco + " | Su debilidad: " + fuerzaPirata + ". En el apocalipsis, el más duro sobrevive.";
+    
+    }
+    if (suministros < 0) {
+        vidas--;
+        suministros = 0;
+        if (vidas <= 0) {
+            causaMuerte = "SAQUEADORES";
+            endGame();
+        } else {
+            gameMessage = "⚔️ ¡EMBOSCADA DE SAQUEADORES! Te lo quitaron TODO y encima te dieron una paliza. (" + vidas + " vidas restantes)";
+        }
+    }
+}
+
+function comerciar() {
+    var comidaIsla = experiencia + suministros;
+    var coste = Math.ceil(Math.random() * comidaIsla);
+
+    if (suministros > coste) {
+        comida += comidaIsla;
+        suministros -= coste;
+        experiencia += 2;
+        gameMessage = "🏚️ Un grupo de supervivientes en las ruinas. Intercambias " + coste + " suministros por " + comidaIsla + " raciones de comida. Confianza mutua: la moneda más valiosa que queda.";
+    } else {
+        experiencia += 1;
+        gameMessage = "🏚️ Supervivientes hostiles. Miran tus manos vacías con desprecio. «Sin recursos, sin trato.» Te señalan la salida con el cañón de una escopeta.";
+    }
+}
+
+function endGame() {
+    gameEnded = true;
+    window.removeEventListener("keydown", keydownHandler, false);
+    pantallaFinal.style.display = "flex";
+
+    if (map[darylRow][darylColumn] === BUNKER && tieneLlave) {
+        tituloFinal.innerHTML = "🏆 ¡BÚNKER ALCANZADO!";
+        mensajeFinal.innerHTML = "Cruzaste el infierno y llegaste al otro lado. El búnker se cierra tras de ti. Afuera, los muertos siguen caminando... pero hoy no te consiguieron. Puntuación de supervivencia: " + (comida + suministros + experiencia) + " puntos.";
+
+    } else if (causaMuerte === "MINA") {
+        tituloFinal.innerHTML = "💥 DESPEDAZADO EN ZONA CERO";
+        mensajeFinal.innerHTML = "La explosión no te dejó ni un segundo para reaccionar. Tus restos se hunden lentamente en las aguas negras. Nadie sabrá lo que pasó aquí.";
+
+    } else if (causaMuerte === "ZOMBIE") {
+        tituloFinal.innerHTML = "🧟 DEVORADO";
+        mensajeFinal.innerHTML = "Los no-muertos te alcanzaron. Tu historia termina aquí, en las aguas putrefactas del mundo que fue. Pronto tú también caminarás entre ellos.";
+
+    } else if (causaMuerte === "SAQUEADORES") {
+        tituloFinal.innerHTML = "⚔️ EJECUTADO POR SAQUEADORES";
+        mensajeFinal.innerHTML = "Te quedaste sin nada que darles. Los saqueadores no dejan testigos. Un disparo seco rompe el silencio del apocalipsis. Fin.";
+
+    } else if (comida <= 0) {
+        tituloFinal.innerHTML = "💀 MUERTO DE HAMBRE";
+        mensajeFinal.innerHTML = "Las raciones se acabaron hace horas. El hambre te derriba. Sin fuerzas, ya no importa lo que está afuera. Todo se vuelve negro.";
+
+    } else {
+        // Fallback por si acaso
+        tituloFinal.innerHTML = "☠️ CAÍDO EN ZONA CERO";
+        mensajeFinal.innerHTML = "Las heridas acumuladas pudieron contigo. El cuerpo tiene un límite, y tú llegaste al tuyo mucho antes que el búnker.";
+    }
+}
+
+function render() {
+    contvidas.innerHTML = "";
+    for (var i = 0; i < vidas; i++) {
+        var corazon = document.createElement("img");
+        corazon.src = "images/corazones.png";
+        corazon.setAttribute("class", "icon-corazon");
+        contvidas.appendChild(corazon);
+    }
+
+    var filaCamara = Math.max(0, Math.min(darylRow - 3, ROWS - 8));
+    var columnaCamara = Math.max(0, Math.min(darylColumn - 3, COLUMNS - 8));
+
+    stage.style.backgroundPosition = `-${columnaCamara * SIZE}px -${filaCamara * SIZE}px`;
+
+    while (stage.firstChild) {
+        stage.removeChild(stage.firstChild);
+    }
+
+    for (var fila = filaCamara; fila < filaCamara + 8; fila++) {
+        for (var columna = columnaCamara; columna < columnaCamara + 8; columna++) {
+
+            var cell = document.createElement("img");
+            cell.setAttribute("class", "cell");
+            stage.appendChild(cell);
+
+            switch (map[fila][columna]) {
+                case WATER:    cell.src = "images/water.png";       break;
+                case ISLAND:   cell.src = "images/island.png";      break;
+                case PIRATE:   cell.src = "images/pirate.png";      break;
+                case BUNKER:     cell.src = "images/campaña.png";     break;
+                case MINA:     cell.src = "images/mina.png";        break;
+                case TIENDA:   cell.src = "images/tienda.png";      break;
+                case SUMINISTRO: cell.src = "images/suministros.png"; break;
+                case KEY:      cell.src = "images/key.png";         break;
+            }
+
+            switch (gameObjects[fila][columna]) {
+                case DARYL:    cell.src = "images/twd.png"; break;
+                case MONSTER: cell.src = "images/z.png";   break;
+            }
+
+            cell.style.top  = (fila    - filaCamara)    * SIZE + "px";
+            cell.style.left = (columna - columnaCamara) * SIZE + "px";
+        }
+    }
+
+// Renderizar iconos en los slots si el jugador tiene los objetos
+if (tieneLlave) {
+    document.getElementById("slot-llave").innerHTML = '<img src="images/key.png" class="inv-img" style="width: 150px; height: 150px;">';
+}
+if (tieneEspada) {
+    document.getElementById("slot-machete").innerHTML = '<img src="images/aniquilador.png" class="inv-img" style="width: 160px; height: 160px;">' ;
+}
+
+    
+    // Panel de estado con lenguaje apocalíptico
+    output.innerHTML = gameMessage;
+    output.innerHTML += "<br>─────────────────────────────────────────────────";
+    output.innerHTML += "<br>🎒 Suministros: <strong>" + suministros + "</strong> | 🥫 Raciones: <strong>" + comida + "</strong>  |  💀 Experiencia: <strong>" + experiencia + "</strong>";
+}
+
+</script>
