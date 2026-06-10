@@ -382,7 +382,7 @@ var VIDEOS = {
 /* ---------------------------------------------------
    FUNCIÓN mostrarVideo
 --------------------------------------------------- */
-function mostrarVideo(rutaVideo, quéHacerDespués) {
+function mostrarVideo(rutaVideo) {
     videoEvento.src = rutaVideo;
     pantallaVideo.style.display = "block";
     videoEvento.play();
@@ -392,14 +392,12 @@ function mostrarVideo(rutaVideo, quéHacerDespués) {
         videoEvento.src = "";
         pantallaVideo.style.display = "none";
         pantallaVideo.onclick = null;
-        quéHacerDespués();
     };
 
     /* El vídeo termina solo */
     videoEvento.onended = function() {
         videoEvento.src = "";
         pantallaVideo.style.display = "none";
-        quéHacerDespués();
     };
 }
 
@@ -489,7 +487,7 @@ function posicionarLlaveAleatoria() {
     while (!posValida) {
         var fA = Math.floor(Math.random() * ROWS);
         var cA = Math.floor(Math.random() * COLUMNS);
-        if (map[fA][cA] === WATER && gameObjects[fA][cA] === 0) {
+        if (map[fA][cA] === WATER || gameObjects[fA][cA] === 0) {
             map[fA][cA] = KEY; posValida = true;
         }
     }
